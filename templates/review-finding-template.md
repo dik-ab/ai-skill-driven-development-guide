@@ -1,32 +1,51 @@
-# Review Findings
+# レビュー指摘テンプレート
 
-## Findings
+レビューでは総評より先に指摘を書きます。各指摘は、修正担当者がそのまま作業に入れる粒度にします。
 
-### Severity: Blocker / High / Medium / Low
+## 指摘
 
-Conclusion: one-sentence required change.
+### 重要度: Blocker / High / Medium / Low
 
-Implementation problem:
+結論:
 
-Source-of-truth evidence:
+実装の問題:
 
-Impact:
+正本の根拠:
 
-Expected fix:
+影響:
 
-File:
+期待する修正:
+
+対象ファイル:
 
 - `path/to/file.ext:line`
 
-## Open Questions
+## 重要度の目安
+
+| 重要度 | 意味 |
+|---|---|
+| Blocker | merge すると仕様違反、データ破壊、セキュリティ問題、重大障害になる |
+| High | 重要な仕様漏れ、設計境界違反、テスト不能な構造 |
+| Medium | 保守性、拡張性、テスト不足に実害がある |
+| Low | 軽微な改善。merge blocker ではない |
+
+## 未解決の質問
 
 - 
 
-## Verification
+## 検証
 
-- [ ] command/result
+- [ ] `実行したコマンド` — 結果
+- [ ] 未実行 — 理由
 
-## Residual Risk
+## 残リスク
 
-- 
+- なし / あり:
+
+## レビュー完了チェック
+
+- [ ] diff の該当行を確認した
+- [ ] 正本ドキュメントを確認した
+- [ ] 修正期待値を書いた
+- [ ] 推測だけの指摘になっていない
 

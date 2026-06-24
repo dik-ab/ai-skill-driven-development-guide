@@ -1,53 +1,79 @@
 ---
 name: skill-name
 description: >
-  Describe when this skill must be used.
-  Triggers: "keyword 1", "keyword 2"
-  NOT for: cases that should use another skill or no skill.
+  この skill を必ず使う場面を 1-3 文で書く。
+  Trigger: "キーワード1", "キーワード2", "ユーザーが言いそうな表現"
+  NOT for: 別 skill を使うべき場面、または skill 不要の軽微作業。
 ---
 
-# Skill Name
+# Skill 名
 
-## Purpose
+## 目的
 
-Explain the problem this skill solves.
+この skill が防ぐミス、または標準化する作業を書きます。
 
-## Inputs
+例:
 
-- Required input:
-- Optional input:
+- 設計書を読まずに実装することを防ぐ。
+- レビュー観点を担当者ごとにばらつかせない。
+- 毎回同じ検証コマンドを漏れなく実行する。
 
-## Read Before Work
+## 入力
 
-List files the agent must read before acting.
+- 必須:
+  - 対象 issue / PR / feature 名
+  - 対象ドメインまたは対象ディレクトリ
+- 任意:
+  - 関連する設計書 PR
+  - 追加で見るべき資料
+
+## 作業前に必ず読むもの
+
+AI は作業開始前に、ここに書いたファイルを読みます。
 
 - `.claude/rules/...`
+- `.agents/skills/.../references/...`
 - `deliverables/specs/...`
+- `tasks/lessons.md`
 
-## Workflow
+## 作業手順
 
-1. Identify scope.
-2. Read required documents.
-3. Inspect existing code or artifacts.
-4. Produce plan or findings.
-5. Make changes only if this skill owns implementation.
-6. Run verification.
-7. Report result with unresolved items.
+1. 依頼内容と対象範囲を確認する。
+2. 必須ファイルを読む。
+3. 既存コードまたは既存ドキュメントを確認する。
+4. 変更方針またはレビュー観点を整理する。
+5. この skill が実装を担当する場合だけ編集する。
+6. 検証コマンドを実行する。
+7. 結果、未解決事項、次のアクションを報告する。
 
-## Output
+## 成果物
 
-- Expected file:
-- Expected report format:
+- 作成・更新するファイル:
+  - `path/to/file.md`
+- 報告形式:
+  - findings-first
+  - checklist
+  - phase report
 
-## Verification
+## 検証
 
 ```bash
-# Commands to run
+# この skill で標準実行するコマンドを書く
+pnpm test
+pnpm build
 ```
 
-## Prohibited
+## 禁止事項
 
-- Do not skip source-of-truth documents.
-- Do not infer business rules from code alone.
-- Do not report success without verification.
+- 正本ドキュメントを読まずに判断しない。
+- 既存コードだけを根拠に仕様を決めない。
+- 検証なしで「完了」と報告しない。
+- 不明点をチャットで雑に聞かない。必要なら根拠付きの質問ファイルを作る。
+
+## 完了条件
+
+- [ ] 必須ファイルを読んだ
+- [ ] 変更またはレビュー結果が成果物に反映された
+- [ ] 検証を実行した、または未実行理由を書いた
+- [ ] 未解決事項を明示した
 

@@ -1,4 +1,4 @@
-# Repository And Documents Structure
+# リポジトリとドキュメント構成
 
 ## 推奨ディレクトリ構成
 
@@ -160,25 +160,25 @@ deliverables/meetings/
 推奨フォーマット:
 
 ```markdown
-# 2026-01-15 API Policy
+# 2026-01-15 API 方針確認
 
-## Participants
+## 参加者
 
-## Context
+## 背景
 
-## Decisions
+## 決定事項
 
 - DEC-001: ...
 
-## Open Questions
+## 未決事項
 
 - OQ-001: ...
 
-## Follow-up
+## TODO
 
 - [ ] ...
 
-## Related Documents
+## 関連ドキュメント
 
 - `deliverables/specs/architecture/...`
 - `issues/...`
@@ -241,4 +241,3 @@ AI には「この辺を見て」ではなく、具体的なファイルパス�
 ```text
 設計書を見ていい感じに実装して。
 ```
-

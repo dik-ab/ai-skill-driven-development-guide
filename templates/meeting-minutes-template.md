@@ -1,40 +1,51 @@
-# YYYY-MM-DD Meeting Title
+# YYYY-MM-DD 議事録タイトル
 
-## Participants
-
-- 
-
-## Context
-
-Why this meeting happened.
-
-## Discussed
+## 参加者
 
 - 
 
-## Decisions
+## 背景
+
+この打ち合わせを行った理由を書きます。
+
+例:
+
+- API 仕様と画面仕様に差分がある。
+- 実装前に責務分担を決める必要がある。
+- 既存 ADR では判断できない新規パターンがある。
+
+## 議題
+
+- 
+
+## 決定事項
 
 - DEC-001:
 
-## Open Questions
+## 未決事項
 
 - OQ-001:
 
-## Follow-Up
+## TODO
 
-- [ ] Owner / due date / action
+- [ ] 担当者 / 期限 / 内容
 
-## Related Documents
+## 関連ドキュメント
 
 - `deliverables/specs/...`
 - `issues/...`
 - `pull-requests/...`
 
-## Promotion Target
+## 反映先
 
-Where each decision should be reflected.
+議事録だけを正本にしないため、決定事項をどこへ反映するかを書きます。
 
-| Decision | Target |
+| 決定 | 反映先 |
 |---|---|
-| DEC-001 | ADR / spec / issue / PR note |
+| DEC-001 | ADR / 設計書 / issue / PR note |
+
+## AI への注意
+
+- 議事録の決定事項を実装根拠にする場合、必ず設計書・ADR・issue へ昇格済みか確認する。
+- 未昇格なら、実装前に「反映先が未確定」として報告する。
 

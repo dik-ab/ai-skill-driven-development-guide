@@ -1,40 +1,55 @@
-# Agent Guide
+# エージェントガイド雛形
 
-## Repository Overview
+このファイルは、AI エージェントがリポジトリで作業する時の入口です。詳細な規約を全部ここに書くのではなく、「何をどの順番で読むか」「何を禁止するか」「どう検証するか」を短く固定します。
 
-- Frontend:
-- Backend:
-- API client:
-- Infrastructure:
-- Documents:
+## リポジトリ概要
 
-## Work Classification
+- フロントエンド: `apps/frontend/...`
+- バックエンド: `apps/backend/...`
+- API クライアント: `packages/api-client/...`
+- インフラ: `infra/...`
+- ドキュメント: `deliverables/...`
 
-1. Classify the request into frontend / backend / API client / infrastructure / documents.
-2. Read matching rules and skills before editing.
-3. Read source-of-truth specs before design decisions.
-4. Keep changes scoped.
-5. Run meaningful verification.
-6. Report unresolved scope, failed checks, and source-of-truth conflicts.
+## 作業分類
 
-## References
+AI は作業前に、依頼を次のどれに該当するか分類します。
 
-- Common guide: `CLAUDE.md`
-- Rules: `.claude/rules/`
-- Skills: `.agents/skills/`
-- Source specs: `deliverables/specs/`
-- Lessons: `tasks/lessons.md`
+- [ ] フロントエンド
+- [ ] バックエンド
+- [ ] API / API クライアント
+- [ ] DB / migration
+- [ ] インフラ
+- [ ] ドキュメント
+- [ ] レビュー / 調査
 
-## Required Rules
+## 作業順序
 
-- Use the project package manager.
-- Do not hand-edit generated files.
-- Keep code identifiers and comments in the project language standard.
-- Do not close an issue if its DoD is incomplete.
-- Verify numeric claims with commands.
-- If implementation cannot match the spec, stop and ask with evidence.
+1. 変更対象を分類する。
+2. 対象に合う `.claude/rules/*.md` と `.agents/skills/*/SKILL.md` を読む。
+3. 設計判断の前に正本ドキュメントを読む。
+4. 既存実装を確認する。
+5. 変更範囲を最小化する。
+6. 対象範囲に合う検証を実行する。
+7. 未解決事項、失敗した検証、正本との矛盾を報告する。
 
-## Commands
+## 参照先
+
+- 共通ガイド: `CLAUDE.md`
+- ルール: `.claude/rules/`
+- skills: `.agents/skills/`
+- 正本ドキュメント: `deliverables/specs/`
+- 過去の教訓: `tasks/lessons.md`
+
+## 必須ルール
+
+- プロジェクト標準の package manager を使う。
+- 生成物は手編集しない。
+- コード、識別子、コメント、コミット文の言語ルールを守る。
+- issue の DoD が未完了なら close キーワードを使わない。
+- 数値や件数は `rg` / `find` / `wc` / 指定コマンドで確認する。
+- 仕様通りに実装できない場合、黙って代替実装せず停止して判断を仰ぐ。
+
+## よく使うコマンド
 
 ```bash
 pnpm lint
@@ -42,15 +57,38 @@ pnpm test
 pnpm build
 ```
 
-## Source Of Truth
+## 正本ドキュメントの優先順位
 
-List source-of-truth documents in priority order.
+ルールが衝突した場合は、この順で確認します。
 
 1. `deliverables/specs/architecture/...`
 2. `deliverables/specs/backend/<domain>/...`
 3. `deliverables/specs/api/...`
+4. `.claude/rules/...`
+5. 既存コード
 
-## Verification
+## 検証方針
 
-Start with the smallest meaningful verification. Broaden checks when the change affects shared behavior, generated clients, APIs, database schema, security, or user-facing flows.
+まず最小の意味ある検証を実行します。共有ロジック、API、DB、認可、生成物、ユーザー操作に影響する場合は検証範囲を広げます。
+
+## 報告フォーマット
+
+```markdown
+## 変更内容
+
+- 
+
+## 検証
+
+- [x] `実行したコマンド`
+- [ ] 未実行: 理由
+
+## 未解決事項
+
+- なし / あり
+
+## 正本との差分
+
+- なし / あり
+```
 

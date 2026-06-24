@@ -1,10 +1,10 @@
-# New Project Adoption
+# 新規プロジェクトへの導入
 
 ## 導入の考え方
 
 新規プロジェクトに AI skill-driven development を入れる時は、最初から大量の skill を作る必要はありません。まず、AI が迷わない入口、正本ドキュメント、最小の AIDLC、レビュー skill から始めます。
 
-## Phase 0: 最小セットを作る
+## フェーズ 0: 最小セットを作る
 
 最初に作るもの:
 
@@ -41,42 +41,42 @@ project-root/
     lessons.md
 ```
 
-## Phase 1: AGENTS.md を作る
+## フェーズ 1: AGENTS.md を作る
 
 `AGENTS.md` に書くこと:
 
 ```markdown
-# Agent Guide
+# エージェントガイド
 
-## Repository Overview
+## リポジトリ概要
 
-## Work Classification
+## 作業分類
 
-1. frontend
-2. backend
-3. api-client
-4. infra
-5. docs
+1. フロントエンド
+2. バックエンド
+3. API / API クライアント
+4. インフラ
+5. ドキュメント
 
-## Work Order
+## 作業順序
 
-1. Classify target area.
-2. Read matching rules and skills.
-3. Read source-of-truth specs before design decisions.
-4. Make minimal scoped changes.
-5. Run meaningful verification.
-6. Report unresolved scope and failed checks.
+1. 変更対象を分類する。
+2. 対象に合う rules と skills を読む。
+3. 設計判断の前に正本ドキュメントを読む。
+4. 変更範囲を最小にする。
+5. 意味のある検証を実行する。
+6. 未解決スコープと失敗した検証を報告する。
 
-## Required Rules
+## 必須ルール
 
-## Commands
+## コマンド
 
-## Source Of Truth
+## 正本ドキュメント
 
-## Verification
+## 検証
 ```
 
-## Phase 2: rules を作る
+## フェーズ 2: rules を作る
 
 最初の rules は短くて構いません。
 
@@ -88,7 +88,7 @@ project-root/
 - `database.md`: migration、index、constraint、seed、audit column
 - `infra.md`: Terraform、secret、environment、plan / validate
 
-## Phase 3: AIDLC skill を導入する
+## フェーズ 3: AIDLC skill を導入する
 
 `.agents/skills/aidlc/SKILL.md` を作り、5 フェーズを定義します。
 
@@ -97,27 +97,27 @@ project-root/
 ```markdown
 # AIDLC
 
-## Phase 1: Context Loading
+## フェーズ 1: コンテキスト読み込み
 
-Read requirements, specs, rules, existing code.
-Output `phase1-context-summary.md`.
+要件、設計書、rules、既存コードを読む。
+`phase1-context-summary.md` を出力する。
 
-## Phase 2: Alignment
+## フェーズ 2: 方針すり合わせ
 
-Detect conflicts. Ask only unresolved questions using `templates/question.md`.
-Output decisions.
+矛盾を検出する。未解決の質問だけを `templates/question.md` 形式で作る。
+確定方針を出力する。
 
-## Phase 3: Test Contract
+## フェーズ 3: テスト契約
 
-Define acceptance conditions and test cases before implementation.
+実装前に受入条件とテストケースを定義する。
 
-## Phase 4: Implementation
+## フェーズ 4: 実装
 
-Implement test-first by unit. Update state.
+ユニットごとにテスト先行で実装する。状態ファイルを更新する。
 
-## Phase 5: Verification
+## フェーズ 5: 検証
 
-Run checks. Reconcile implementation and docs.
+検証を実行する。実装と設計書の差分を照合する。
 ```
 
 必要なテンプレート:
@@ -127,7 +127,7 @@ Run checks. Reconcile implementation and docs.
 - `templates/test-contract.md`
 - `templates/multi-agent-coordination.md`
 
-## Phase 4: 設計書の正本を作る
+## フェーズ 4: 設計書の正本を作る
 
 AI が参照できるように、設計書は粒度を揃えます。
 
@@ -159,7 +159,7 @@ dependencies:
 
 API 仕様は OpenAPI など機械可読な形式にします。画面仕様や業務ルールは HTML / Markdown でもよいですが、ID を付けます。
 
-## Phase 5: レビュー skill を作る
+## フェーズ 5: レビュー skill を作る
 
 最初に必要なのは、差分レビューと契約レビューです。
 
@@ -170,12 +170,12 @@ API 仕様は OpenAPI など機械可読な形式にします。画面仕様や�
 - rules の読み込み
 - 設計書との照合
 - テスト有無
-- findings の出力形式
-- severity
+- 指摘の出力形式
+- 重要度
 
 契約レビューでは、必ず正本ファイルのパスと実装ファイルのパスを両方示します。
 
-## Phase 6: PR skill を作る
+## フェーズ 6: PR skill を作る
 
 PR 作成 skill では、次を標準化します。
 
@@ -187,7 +187,7 @@ PR 作成 skill では、次を標準化します。
 - issue の閉じ方
 - merge 後の worktree cleanup
 
-## Phase 7: lessons を運用する
+## フェーズ 7: lessons を運用する
 
 AI の失敗は資産になります。レビュー漏れ、検証漏れ、仕様読み違いが起きたら、`tasks/lessons.md` に再発防止策を書きます。
 
@@ -228,4 +228,3 @@ AI には、作業開始時に lessons を読むよう入口ガイドで指示�
 - AI が読む順番を明示する。
 - 「質問する前に読む」を徹底する。
 - 完了条件はチェックリストとして外部化する。
-

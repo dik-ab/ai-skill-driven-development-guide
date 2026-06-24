@@ -1,65 +1,95 @@
-# Phase Question
+# AIDLC 質問ファイル雛形
 
-## Q1. Concrete Question
+このテンプレートは、AI がユーザーに判断を求める時に使います。チャットで「A と B どっち？」と聞くのではなく、判断材料を揃えた小さなレポートとして書きます。
 
-### 1. Principle / Background
+## Q1. 具体的な質問を書く
 
-- Why this decision is needed.
-- Which principles are involved.
-- What may break if this remains unresolved.
+例: 「他モジュールのデータ参照を Port 経由にするか、直接参照にするか」
 
-### 2. Terms
+### 1. 背景 / 原理原則
 
-- Term:
-- Term:
+- なぜ今この判断が必要か:
+- 関係する原理原則:
+  - DDD
+  - CQRS
+  - API 契約
+  - DB 制約
+  - 認可 / 監査
+- 未解決のまま進むと起きる問題:
 
-### 3. Source-Of-Truth Evidence
+### 2. 用語定義
 
-- `path/to/spec.md:section` — summary
-- `path/to/adr.md:section` — summary
+質問内で使う用語を、プロジェクト外の人にも分かるように定義します。
 
-### 4. External References
+- **用語1**:
+- **用語2**:
 
-- Title / URL / chapter:
+### 3. 正本ドキュメント上の根拠
 
-### 5. Option Comparison
+該当箇所へ戻れるよう、ファイルパスと章節を書きます。
 
-| Viewpoint | A) Option A | B) Option B | X) Other |
+- `deliverables/specs/architecture/xxx.md:§1` — 要約
+- `deliverables/specs/backend/<domain>/01_domain_model_spec.md:§2` — 要約
+- `deliverables/specs/api/openapi.yaml:paths./xxx` — 要約
+
+### 4. 外部リファレンス
+
+必要な場合だけ書きます。不要なら「なし」と書きます。
+
+- なし
+
+### 5. 選択肢比較
+
+| 観点 | A) 推奨案 | B) 代替案 | X) その他 |
 |---|---|---|---|
-| Spec alignment | | | |
-| Implementation cost | | | |
-| Testability | | | |
-| Future change cost | | | |
+| 正本との整合 | | | ユーザー記入 |
+| 実装コスト | | | ユーザー記入 |
+| テスト容易性 | | | ユーザー記入 |
+| 将来変更への強さ | | | ユーザー記入 |
+| リスク | | | ユーザー記入 |
 
-### 6. Details
+### 6. 各選択肢の詳細
 
-#### A) Option A
+#### A) 推奨案の名前
 
-- What to do:
-- Pros:
-- Cons:
+- 何をするか:
+- メリット:
+- デメリット:
+- 影響するファイル:
 
-#### B) Option B
+#### B) 代替案の名前
 
-- What to do:
-- Pros:
-- Cons:
+- 何をするか:
+- メリット:
+- デメリット:
+- 影響するファイル:
 
-#### X) Other
+#### X) その他
 
-User writes another option.
+ユーザーが独自案を書く欄です。
 
-### 7. AI Recommendation
+### 7. AI の推奨
 
-**Recommendation: A**
+**推奨: A) 推奨案の名前**
 
-Reason:
+理由:
 
-- ...
+- 正本ドキュメントのどの条件を満たすか:
+- 他案を選ばない理由:
+- 長期的な保守性:
 
-### 8. Answer
+### 8. 回答欄
+
+ユーザーは `A` / `B` / `X` のいずれかを書きます。`X` の場合は具体案も書きます。
 
 ```text
 [Answer]:
 ```
+
+## 回答後の確認
+
+- [ ] 回答が空欄ではない
+- [ ] 複数質問間で矛盾していない
+- [ ] 曖昧な表現が残っていない
+- [ ] 確定方針を `phase2-alignment-decisions.md` に反映した
 

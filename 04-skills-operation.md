@@ -1,4 +1,4 @@
-# Skills Operation
+# skills 運用
 
 ## skill とは何か
 
@@ -39,26 +39,26 @@ skill は、AI に特定作業をさせるための実行手順書です。単�
 ---
 name: backend-testing
 description: >
-  Backend のテスト作成・修正・実行時に使う。
+  バックエンドのテスト作成・修正・実行時に使う。
   Trigger: "テストを書いて", "test", "integration test", "coverage"
-  NOT for: frontend test, quick command only
+  NOT for: フロントエンドテスト、単発コマンドだけで完了する作業
 ---
 
-# Backend Testing
+# バックエンドテスト
 
-## Purpose
+## 目的
 
-## Inputs
+## 入力
 
-## Read Before Work
+## 作業前に必ず読むもの
 
-## Workflow
+## 作業手順
 
-## Output
+## 成果物
 
-## Verification
+## 検証
 
-## Prohibited
+## 禁止事項
 ```
 
 description は重要です。AI はここを見て skill を起動するため、トリガー語と対象外を明確に書きます。
@@ -82,7 +82,7 @@ AI は、skill を使う前に `SKILL.md` を最後まで読みます。`SKILL.m
 サブエージェントへ委譲する場合、親のコンテキストは引き継がれません。prompt に読み込むべきファイルを明示します。
 
 ```markdown
-## Mandatory Files
+## 必須読み込みファイル
 
 作業開始前に以下を読むこと。
 
@@ -141,17 +141,17 @@ AI が長い shell を毎回手で組み立てるより、script 化した方が
 複数 AI に分担させる場合は、`work-log.md` を共有ログにします。
 
 ```markdown
-## U-001 Domain Model
-**Status**: completed
-**Agent**: backend-agent
-**Files Created/Modified**:
+## U-001 ドメインモデル
+**状態**: completed / in-progress / blocked
+**担当 AI**: backend-agent
+**作成・変更ファイル**:
 - `apps/backend/src/domain/order/Order.java`
-**Key Decisions**:
-- Order total is calculated by domain method, not application service.
-**Public Interfaces**:
+**重要な判断**:
+- 合計金額は application service ではなく domain method で計算する。
+**公開インターフェース**:
 - `Order#confirm()`
-**Notes for Dependent Units**:
-- Application unit can call `confirm()` after policy validation.
+**後続ユニットへの申し送り**:
+- application unit は policy validation 後に `confirm()` を呼び出せる。
 ```
 
 親エージェントの責務:
@@ -172,4 +172,3 @@ AI が長い shell を毎回手で組み立てるより、script 化した方が
 - script や template で再現性を高められる
 
 逆に、1 回きりの小さな修正は skill 化しません。
-
