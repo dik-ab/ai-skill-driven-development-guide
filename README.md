@@ -17,6 +17,14 @@
    レビュー、テスト、仕様照合、PR 前チェックの運用。
 6. `06-new-project-adoption.md`  
    新規プロジェクトへ導入する手順と初期テンプレート。
+7. `07-spec-repository-operation.md`  
+   設計書そのものを AI で生成、検証、保守する運用。SSoT の層構造と整合性パイプライン。
+8. `08-subagents-and-orchestration.md`  
+   再利用可能なサブエージェント定義と、coordinator / worker などの組み合わせパターン。
+9. `09-hooks-and-machine-guards.md`  
+   hooks、パススコープ付き rules、MCP、監査ログなどの機械的ガード。
+10. `10-operations-and-non-dev-skills.md`  
+    クラウド認証・接続を自動化する運用系 skill と、PM・報告・文書などの開発以外の AI 活用。
 
 補助テンプレートは `templates/` に置いています。
 

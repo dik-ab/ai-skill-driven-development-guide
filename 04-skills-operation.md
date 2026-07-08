@@ -172,3 +172,41 @@ AI が長い shell を毎回手で組み立てるより、script 化した方が
 - script や template で再現性を高められる
 
 逆に、1 回きりの小さな修正は skill 化しません。
+
+## トリガー精度の測定（evals）
+
+skill は「正しい場面で起動するか」が品質の半分です。description の書き方は感覚に頼らず、テストケースで測定します。
+
+skill ごとに `evals/trigger-eval.json` を置きます。
+
+```json
+{
+  "skill": "backend-testing",
+  "cases": [
+    { "prompt": "UseCaseのテストを書いて", "expect": "trigger" },
+    { "prompt": "統合テストが落ちてる", "expect": "trigger" },
+    { "prompt": "フロントのテスト追加して", "expect": "no-trigger" },
+    { "prompt": "この関数の意味を教えて", "expect": "no-trigger" }
+  ]
+}
+```
+
+運用の要点:
+
+- ユーザーが実際に言いそうな表現でケースを作る。整った依頼文だけでなく、雑な口語も入れる。
+- `no-trigger` ケースには、隣接する skill が担当すべき依頼を必ず入れる。トリガー漏れよりトリガー衝突の方が発見しにくいためです。
+- skill の description を変更したら evals を回し、既存ケースが退行していないか確認する。
+- 起動ミスが実際に起きたら、その依頼文をケースに追加してから description を直す（レビュー漏れを lessons に足すのと同じ発想です）。
+
+## 複数 AI ツール間の skill ミラー同期
+
+Claude Code と Codex など複数のエージェントを使う場合、skill ライブラリをツールごとのディレクトリ（例: `.claude/skills/` と `.agents/skills/`）にミラーする構成になりがちです。ミラーは必ずドリフトします。
+
+対策を最初に決めます。
+
+- **正本を 1 つに決める。** どちらのツリーが正か、入口ガイド（`AGENTS.md` / `CLAUDE.md`）に明記する。
+- **同期を機械化する。** 手動コピーにせず、同期スクリプトか symlink で片方向に流す。
+- **差分検知を CI か script に置く。** 「skill 数」「SKILL.md のハッシュ」の比較だけでもドリフトは検知できる。
+- ツール固有の記述（frontmatter の形式差など）が必要な場合は、変換を同期スクリプトの責務にする。
+
+ミラー同期を人力にすると、「片方にだけ evals がある」「片方にだけ新 skill がある」という状態がすぐに発生し、ツールによって AI の挙動が変わる原因になります。

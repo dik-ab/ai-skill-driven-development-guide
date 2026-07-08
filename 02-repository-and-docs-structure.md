@@ -96,6 +96,8 @@ workspace/
 
 rules は「常に守る制約」です。作業手順そのものよりも、依存方向、命名、禁止事項、検証コマンド、生成物の扱いなどを書きます。
 
+rules には frontmatter で対象パスの glob を付け、該当パスに触れた時だけ有効化するのが推奨です（`09-hooks-and-machine-guards.md` 参照）。
+
 ## skills の置き方
 
 `.agents/skills/` には、AI が特定作業を行うための手順書を置きます。
