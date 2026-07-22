@@ -5,25 +5,27 @@
 
 ## 読む順番
 
-1. `01-overview.md`  
+1. `01-overview.md`
    AI 駆動開発の全体像、基本原則、置くべき情報の種類。
-2. `02-repository-and-docs-structure.md`  
+2. `02-repository-and-docs-structure.md`
    リポジトリ、設計書、議事録、構成図、タスク成果物の置き方。
-3. `03-aidlc-workflow.md`  
+3. `03-how-ai-loads-instructions-and-skills.md`
+   `sample-monorepo` を例に、入口ガイド、rules、skills がどのように発見・選択・読み込みされるか。
+4. `04-aidlc-workflow.md`
    AIDLC の 5 フェーズ開発フロー。実装開始前から検証まで。
-4. `04-skills-operation.md`  
+5. `05-skills-operation.md`
    skills の作り方、読み方、起動条件、サブエージェント連携。
-5. `05-review-and-quality-gates.md`  
+6. `06-review-and-quality-gates.md`
    レビュー、テスト、仕様照合、PR 前チェックの運用。
-6. `06-new-project-adoption.md`  
+7. `07-new-project-adoption.md`
    新規プロジェクトへ導入する手順と初期テンプレート。
-7. `07-spec-repository-operation.md`  
+8. `08-spec-repository-operation.md`
    設計書そのものを AI で生成、検証、保守する運用。SSoT の層構造と整合性パイプライン。
-8. `08-subagents-and-orchestration.md`  
+9. `09-subagents-and-orchestration.md`
    再利用可能なサブエージェント定義と、coordinator / worker などの組み合わせパターン。
-9. `09-hooks-and-machine-guards.md`  
+10. `10-hooks-and-machine-guards.md`
    hooks、パススコープ付き rules、MCP、監査ログなどの機械的ガード。
-10. `10-operations-and-non-dev-skills.md`  
+11. `11-operations-and-non-dev-skills.md`
     クラウド認証・接続を自動化する運用系 skill と、PM・報告・文書などの開発以外の AI 活用。
 
 補助テンプレートは `templates/` に置いています。

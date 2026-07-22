@@ -30,7 +30,7 @@
 | 設計だけの変更 | specs を更新 → businessRules は触らない |
 | 実装から見つかった仕様差分 | delta として記録 → どちらを直すか人間が判断 → 正本を更新 |
 
-AI に設計書を編集させる時は、この順序をスキップさせません。「specs だけ直して businessRules と矛盾したまま」が最も起きやすい事故です。hook で編集時に注意喚起する方法は `09-hooks-and-machine-guards.md` を参照してください。
+AI に設計書を編集させる時は、この順序をスキップさせません。「specs だけ直して businessRules と矛盾したまま」が最も起きやすい事故です。hook で編集時に注意喚起する方法は `10-hooks-and-machine-guards.md` を参照してください。
 
 ## 設計書生成パイプライン
 
