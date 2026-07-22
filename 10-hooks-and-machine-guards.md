@@ -116,3 +116,142 @@ AI にツール操作をさせる範囲が広がるほど、「いつ、どの�
 - そのリポジトリで使う理由がないツールは deny に入れる（例: notebook 編集、外部送信系）。
 - 破壊的コマンドは許可リスト方式にし、都度確認へ倒す。
 - 「禁止事項」を文書に書くだけでなく、可能なものは設定で機械的に塞ぐ。
+
+## hookが動くまで
+
+scriptを置くだけではhookになりません。AI clientの設定に、どのtool eventでどのcommandを呼ぶか登録します。
+
+```text
+AIがEdit toolを要求
+  ↓
+clientがPreToolUse hookを呼ぶ
+  ↓
+hookがJSONから対象pathを読む
+  ├─ 許可 → Editを実行
+  └─ 拒否 → Editを止め、理由をAIへ返す
+  ↓
+clientがPostToolUse hookを呼ぶ
+  ↓
+対象fileだけlint
+```
+
+設定の形やevent名、終了codeはclient versionで異なるため、利用中clientの公式仕様を確認します。別clientへ同じ設定fileをコピーしても動くとは限りません。
+
+## 具体例: generated clientの手編集を止める
+
+ruleだけの場合:
+
+```markdown
+- `packages/api-client/generated/**`は手編集しない。
+```
+
+これは重要な指示ですが、AIが読み飛ばす可能性があります。blocking hookでは対象pathを機械的に判定します。
+
+```bash
+#!/usr/bin/env bash
+set -eu
+
+file_path=$(jq -r '.tool_input.file_path // empty')
+
+case "$file_path" in
+  packages/api-client/generated/*)
+    echo "Generated API client must not be edited directly. Update OpenAPI and regenerate it." >&2
+    exit 2
+    ;;
+esac
+
+exit 0
+```
+
+AIへ返すerrorには、禁止理由だけでなく正しい代替手順も含めます。
+
+```text
+拒否: generated fileは手編集できません。
+次の手順: OpenAPIを更新 → pnpm generate:api-client → 差分確認
+```
+
+これによりAIは単に停止するのではなく、正しいworkflowへ戻れます。
+
+## hook、test、CI、permissionの使い分け
+
+| 仕組み | 強い点 | 弱い点 |
+|---|---|---|
+| hook | 操作直前・直後に速くfeedback | client依存、bypassされる可能性 |
+| test | 振る舞いを検証 | testにない条件は検出しない |
+| CI | repositoryの共通gate | feedbackが遅い |
+| permission | tool・操作自体を制限 | 細かな業務判断には向かない |
+| review | 文脈・設計判断 | 人・AIの見落としがある |
+
+重要な制約は1つだけへ依存しません。
+
+```text
+generated編集禁止
+  ├─ AGENTS.mdで理由を説明
+  ├─ hookで即時拒否
+  └─ CIでgenerated差分と再生成結果を比較
+```
+
+## blockingにしてはいけない例
+
+「設計書を変更したら必ずADRを作る」は常に正しいとは限りません。誤字修正までblockingすると作業を妨げます。
+
+```text
+機械的に正誤が決まる
+  → blocking
+
+変更の意味を理解しないと決まらない
+  → advisoryまたはreview
+```
+
+advisory例:
+
+```text
+公開契約を変更しています。
+既存ADRの更新または新規ADRが必要か確認してください。
+```
+
+## hookの安全性
+
+hookはAIのtool入力を受けてshellを実行するため、hook自身も攻撃面になります。
+
+- tool入力をそのままshellへ展開しない。
+- pathをquoteし、許可するextension・directoryを限定する。
+- secretやfile内容をlogへ出さない。
+- repositoryに置かれたhookをtrust前にreviewする。
+- network送信やproduction操作をhookへ入れない。
+- timeoutを設け、重いproject-wide testを毎Editで実行しない。
+
+## 監査logに残すもの・残さないもの
+
+残す例:
+
+```json
+{
+  "timestamp": "2026-01-15T10:00:00Z",
+  "event": "PreToolUse",
+  "tool": "Edit",
+  "path": "packages/api-client/generated/example.ts",
+  "decision": "blocked",
+  "rule": "generated-files-read-only"
+}
+```
+
+残さないもの:
+
+- access key、session token、password
+- customer dataやrequest body全文
+- 不要なsource code全文
+- 認証cookieやAuthorization header
+
+監査可能性と情報漏洩防止を両立させます。
+
+## 導入チェックリスト
+
+- [ ] 利用中clientが対応するeventと終了codeを確認した
+- [ ] blocking/advisoryの理由を説明できる
+- [ ] 正しい操作まで誤って止めないtestがある
+- [ ] errorに代替手順がある
+- [ ] shell injectionを防いでいる
+- [ ] secretをlogへ残さない
+- [ ] hook失敗時の挙動を決めた
+- [ ] CIにも必要な最終gateがある

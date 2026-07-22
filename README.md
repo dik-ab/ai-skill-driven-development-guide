@@ -36,6 +36,32 @@
 - `templates/meeting-minutes-template.md`
 - `templates/review-finding-template.md`
 
+## 読者別の入口
+
+最初から全章を読む必要はありません。
+
+| 読みたいこと | 推奨する章 |
+|---|---|
+| AI駆動開発の考え方を知りたい | 01 |
+| fileをどこへ置くか知りたい | 02 |
+| AIが`CLAUDE.md`やskillをどう読むか知りたい | 03 |
+| feature開発をphaseで管理したい | 04 |
+| skillを設計・改善したい | 05 |
+| reviewとmerge条件を整えたい | 06 |
+| 新しいprojectへ導入したい | 07 |
+| 設計書自体をAIで保守したい | 08 |
+| 複数agentへ分担したい | 09 |
+| 指示をhookやCIで強制したい | 10 |
+| AWS、DB、PM、報告へ広げたい | 11 |
+
+## このガイドの位置付け
+
+このガイドにおけるAIDLCとskill運用は、設計書とcoding standardがあるproject向けに整理した実務modelです。業界標準規格を意味しません。
+
+AI clientの自動読込場所、frontmatter、hook、subagentなどの仕様はversionによって変わります。考え方とproject内の正本はこのガイドで管理し、製品固有の挙動は各公式documentationと実際のclient表示で確認してください。
+
+具体例には`sample-monorepo`の構造を使いますが、業務仕様そのものを他projectへコピーすることは意図していません。移植するのは、入口・rule・skill・spec・test・guardを分ける考え方です。
+
 ## この方式の目的
 
 - AI の思い込みや実装ドリフトを、文書・テスト・レビューで抑える。

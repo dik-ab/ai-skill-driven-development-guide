@@ -218,7 +218,7 @@ AI には、作業開始時に lessons を読むよう入口ガイドで指示�
 - [ ] SSoT のレイヤーと変更順序が決まっている
 - [ ] 主要 skill に trigger evals がある
 - [ ] 複数 AI ツールを使う場合、skill ミラーの正本と同期方法が決まっている
-- [ ] 運用系 skill（クラウド認証・接続、DB アクセス）が手動入力なしで完走できる
+- [ ] 運用系 skillが、組織の認証・承認policyに従い、不要な手戻りなく完走できる
 
 ## 最初の 30 日の進め方
 
@@ -237,3 +237,118 @@ AI には、作業開始時に lessons を読むよう入口ガイドで指示�
 - AI が読む順番を明示する。
 - 「質問する前に読む」を徹底する。
 - 完了条件はチェックリストとして外部化する。
+
+## 最初から全部入れない
+
+導入初日に大量のruleとskillを作ると、どれが正しいか検証できません。成熟度を3段階に分けます。
+
+| 段階 | 導入するもの | 目的 |
+|---|---|---|
+| Level 1: 入口 | `AGENTS.md`、正本path、基本command | AIがrepositoryを迷わない |
+| Level 2: 再現 | 頻出skill、test、review、lessons | 同じ作業を同じ方法で行う |
+| Level 3: 強制 | hooks、CI、evals、監査、権限 | 注意力に依存しない |
+
+Level 1が不正確なままLevel 3を作ると、誤ったルールを機械的に強制してしまいます。
+
+## 具体例: 小規模Webアプリへ導入する
+
+前提:
+
+```text
+apps/web       React
+apps/api       Spring Boot
+openapi.yaml   API契約
+```
+
+### 1日目: 入口を作る
+
+```markdown
+# AGENTS.md
+
+## Repository map
+- Web: `apps/web`
+- API: `apps/api`
+- API contract: `openapi.yaml`
+
+## Rules
+- package managerはpnpm
+- generated clientは手編集しない
+- API変更後はclientを再生成する
+
+## Validation
+- Web: `pnpm --filter web test`
+- API: `./gradlew :apps:api:test`
+```
+
+この段階で、AIに「repositoryの構成を説明して」と依頼し、入口の記述だけで正しく分類できるか確認します。
+
+### 1週目: 1つのskillを実タスクで作る
+
+例えば画面追加が頻出なら`web-screen` skillを作ります。
+
+```text
+.agents/skills/web-screen/
+  SKILL.md
+  references/component-patterns.md
+```
+
+実際の「顧客一覧画面を追加する」taskで使い、次を観察します。
+
+- skillが自動で選ばれたか
+- OpenAPIを先に確認したか
+- 既存component patternを再利用したか
+- loading/error/empty testを作ったか
+- 不要なfileまで変更しなかったか
+
+### 2週目以降: 失敗をrule・test・hookへ昇格する
+
+```text
+失敗: generated clientを直接編集した
+  ↓
+AGENTS.mdの注意だけでは再発
+  ↓
+PreToolUse hookまたはCIでgenerated pathの編集を検知
+```
+
+失敗の種類に応じて、文書、skill、test、hookのどこへ再発防止を置くか選びます。
+
+## 導入時の確認prompt
+
+設定fileを置いただけで成功と判断しません。次のようなpromptで挙動を確認します。
+
+```text
+- このrepositoryのfrontend、backend、API契約の場所を説明して
+- APIを変更する時に読むべきfileとcommandを列挙して
+- 「ログインを追加して」という依頼ではどのskillを使う？
+- generated fileを直接直してよい？根拠も示して
+- 変更完了を判断するために何を実行する？
+```
+
+期待と違う回答になった場合、AIを責める前に入口、配置、description、優先順位を修正します。
+
+## ownerと更新契機を決める
+
+| 成果物 | owner例 | 更新契機 |
+|---|---|---|
+| `AGENTS.md` | repository maintainer | 構成・command変更 |
+| 技術rule | area owner | standard・version変更 |
+| domain spec | domain owner | business/API変更 |
+| skill | workflow owner | 実作業で失敗・手戻り |
+| hook / CI | platform team | guard変更 |
+| lessons | task担当 | 再発可能な失敗発見 |
+
+owner不在の文書は古くなります。定期更新日だけでなく、「何が変わったら更新するか」を決めます。
+
+## 導入の成功を測る
+
+skill数や文書数を成果にしません。
+
+- task開始から最初の正しい変更までの時間
+- reviewで見つかった仕様漏れ
+- AIが人間へ聞いた質問のうち、文書に答えがあった割合
+- test未実行の完了報告数
+- 同じ原因による手戻り・障害の再発数
+- skillのtrigger誤検知・未検知
+- lead timeとAI/tool利用cost
+
+数値は導入前後で比較し、改善しない仕組みは簡略化または廃止します。

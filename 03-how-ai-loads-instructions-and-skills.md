@@ -62,6 +62,56 @@ sample-monorepo/
 
 これは skill 本文を Markdown import する記述ではありません。AI に「何をどの順番で参照するか」を伝えるルーティング表です。実際の自動発見は、Codex と Claude Code が持つディレクトリ探索の仕組みが担当します。
 
+### 実際の`CLAUDE.md`には何を書くのか
+
+参考プロジェクトの入口は参照先一覧だけではありません。実際には、AIが最初の分類と安全な作業開始に必要な情報を持っています。要点を縮めると次の形です。
+
+```markdown
+# 参考プロジェクト エージェントガイド
+
+## リポジトリ概要
+- POS: `apps/frontend/pos`
+- Web Booking: `apps/frontend/web-booking`
+- Backend: `apps/backend/api`
+- API client: `packages/api-client`
+- Infra: `infra/terraform`
+
+## 作業順序
+1. 変更対象を分類する。
+2. 対象に合うrulesとskillsを読む。
+3. backend設計判断は正本と照合する。
+4. 変更を最小にして検証する。
+5. 未解決scopeと失敗した検証を報告する。
+
+## 必須ルール
+- package managerは`pnpm`を使う。
+- generated API clientは手編集しない。
+- DoD未完了ならissueをcloseしない。
+- 仕様通りに実装できなければ黙って代替しない。
+
+## コマンド
+- POS test: `pnpm --filter pos test:run`
+- Backend test: `./gradlew :apps:backend:api:test`
+- API client生成: `pnpm generate:api-client`
+```
+
+ここで重要なのは、`CLAUDE.md`が全実装方法を説明しないことです。
+
+```text
+CLAUDE.mdが答える
+  - どの領域か
+  - 最初にどこを見るか
+  - repository全体で何を禁止するか
+  - 代表commandは何か
+
+skill / rule / specが答える
+  - 今回の作業を具体的にどう進めるか
+  - 対象領域の詳細制約は何か
+  - 何を実現すべきか
+```
+
+入口を短く保つことで、すべてのtaskへ無関係な詳細を読み込ませずに済みます。
+
 ## 読み込みの全体フロー
 
 ```text
@@ -183,25 +233,114 @@ Read the master SKILL.md first and follow it.
 
 ## 具体例: 「POS に新しい画面を追加して」
 
-この依頼を受けた場合、概ね次の順序で情報が絞り込まれます。
+### `pos-app.md`はどこから来るのか
 
-1. 入口ガイドから、対象が `apps/frontend/pos` であると分類する。
-2. Claude Codeでは `paths: apps/frontend/pos/**` を持つ `pos-app.md` が対象になる。
-3. `spa-frontend` の `description` が依頼内容と一致する。
-4. `spa-frontend/SKILL.md` の本文を読む。
-5. skill が指定するディレクトリ規約、component pattern、state管理、API連携のreferenceを読む。
-6. API仕様や画面仕様など、今回必要な正本だけを読む。
-7. 実装後、skillと入口ガイドが指定するtest、lint、buildを実行する。
+`pos-app.md`はAIがその場で作るファイルではありません。プロジェクトの開発者があらかじめ次の場所へ置いたruleです。
+
+```text
+sample-monorepo/
+  .claude/
+    rules/
+      pos-app.md
+```
+
+先頭のfrontmatterには適用対象が書かれています。
+
+```yaml
+---
+paths:
+  - apps/frontend/pos/**
+---
+```
+
+`**`は配下の任意のdirectory・fileを表します。
+
+一致する例:
+
+```text
+apps/frontend/pos/src/pages/ReservationPage.tsx
+apps/frontend/pos/src/features/customer/CustomerForm.tsx
+apps/frontend/pos/package.json
+```
+
+一致しない例:
+
+```text
+apps/frontend/web-booking/app/page.tsx
+apps/backend/api/src/main/java/Example.java
+infra/terraform/main.tf
+```
+
+### ユーザーの「POS」とpathをどう結び付けるか
+
+ユーザーは通常、repository pathを言いません。`CLAUDE.md`のrepository概要に次の対応があるため、AIは自然言語とpathを結び付けられます。
+
+```text
+POS         → apps/frontend/pos
+Web Booking → apps/frontend/web-booking
+Backend     → apps/backend/api
+Infra       → infra/terraform
+```
+
+```text
+「POSに画面を追加して」
+  ↓ CLAUDE.mdのrepository map
+対象はapps/frontend/pos
+  ↓ path ruleと一致
+pos-app.mdが関係する
+```
+
+### ruleとskillは別の条件で選ばれる
+
+`pos-app.md`と`spa-frontend`は一直線に呼び出し合うものではありません。
+
+```text
+ユーザー依頼
+  ├─ 対象file pathで選ぶ → pos-app.md rule
+  └─ 依頼の意味で選ぶ    → spa-frontend skill
+```
+
+| 対象 | 選択条件 | 役割 |
+|---|---|---|
+| `pos-app.md` | `apps/frontend/pos/**`を扱う | POSで守る固定ルール |
+| `spa-frontend` | 「POS」「画面追加」などがdescriptionと一致 | 画面実装の作業手順 |
+
+### より正確な処理順序
+
+ruleとskillの読込前後はclientや操作によって前後し得ます。固定された一本道ではなく、最終的に必要なcontextが合流すると考えます。
+
+1. Claude Codeがsession開始時に`CLAUDE.md`を読む。
+2. 利用可能なrulesとskillsの存在・metadataを認識する。
+3. ユーザーが「POSに新しい画面を追加して」と依頼する。
+4. `CLAUDE.md`から`POS = apps/frontend/pos`と分類する。
+5. `spa-frontend`のdescriptionが「POS」「画面追加」に一致する。
+6. `.claude/skills/spa-frontend/SKILL.md`を読む。
+7. 入口の指示に従い`.agents/skills/spa-frontend/SKILL.md`のmasterを読む。
+8. POS配下の既存fileを調査すると、path-scopedな`pos-app.md`が関係する。
+9. masterが指定するcomponent、state、APIのreferenceを必要に応じて読む。
+10. 対象画面仕様、OpenAPI、関連ADRを読む。
+11. 実装し、対象testからlint、typecheck、buildへ検証を広げる。
 
 ```text
 「POS に新しい画面を追加して」
-  → POS の path rule
-  → spa-frontend skill
+  ├→ POS の path rule
+  └→ spa-frontend skill
   → component / state / API references
   → 対象画面と API の仕様
   → 実装
   → test / lint / build
 ```
+
+### 実際に何が読み込まれたかを確認する
+
+自動発見は設定やclient versionに依存するため、推測だけで「読まれた」と判断しません。
+
+- Claude Code: skill一覧、context表示、debug機能で確認する。
+- Codex: 利用可能skill一覧とactiveなinstruction sourceを確認する。
+- 意図したskillが出ない: 配置、frontmatter、description、session開始位置を確認する。
+- path ruleが効かない: globと実際に扱っているpathを比較する。
+
+最終的な証拠は、文書にpathが書かれていることではなく、利用中clientがそのinstruction・skillを認識していることです。
 
 ## 自動で読むものと、指示されてから読むもの
 

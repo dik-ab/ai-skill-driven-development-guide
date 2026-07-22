@@ -182,3 +182,116 @@ DoD が未完了なら、issue を閉じるキーワードは使いません。
 ```
 
 lessons は AI が次回最初に読むべき再発防止リストです。
+
+## レビューと品質ゲートの違い
+
+レビューは「文脈を読んで判断する活動」、quality gateは「条件を満たしたか判定する関所」です。
+
+```text
+lint / typecheck / test
+  → 機械的に判定できるquality gate
+
+業務ルールとの整合、責務、将来リスク
+  → 文脈が必要なreview
+```
+
+機械で判定できる問題を人間レビューへ残すと、レビュアーの時間を消費します。反対に、「この責務分割は妥当か」をlintだけで完全に判定することもできません。
+
+## 具体例: 認可漏れのfinding
+
+悪い指摘:
+
+```text
+権限チェックが足りない気がします。確認してください。
+```
+
+これでは、何が問題で、どう直し、どう確認するか分かりません。
+
+改善例:
+
+```markdown
+### High: 更新前に対象店舗へのaccess scopeを検証する
+
+実装の問題:
+`UpdateReservationUseCase`はPermissionCodeだけを確認し、対象予約のstoreIdが
+ユーザーのAccessScopeに含まれるか確認せずrepository.save()を呼んでいる。
+
+正本の根拠:
+- `businessRules/reservation.html` BR-RES-014
+- `architecture/adr/ADR-021-authorization-order.md`
+
+影響:
+同じcompany内の権限を持つstaffが、scope外店舗の予約を更新できる。
+
+期待する修正:
+tenant → permission → scopeの順で検証し、scope外では403を返す。
+repository.save()が呼ばれないtestも追加する。
+
+対象:
+- `UpdateReservationUseCase.java:42`
+```
+
+この形式なら、指摘の正しさを第三者が検証でき、修正担当も期待値を推測せずに済みます。
+
+## quality gateを層に分ける
+
+すべてを毎回project-wideで実行すると遅くなります。feedbackの速さと保証範囲を分けます。
+
+| 層 | タイミング | 例 |
+|---|---|---|
+| 編集直後 | 秒単位 | format、対象file lint |
+| unit loop | 数秒〜分 | 対象class/component test |
+| feature完了 | 分単位 | package test、typecheck、integration |
+| PR / merge | 広い範囲 | project-wide build、architecture、E2E |
+| deploy後 | 実環境 | smoke、health、主要操作 |
+
+```text
+速い局所gate
+  ↓
+feature gate
+  ↓
+repository gate
+  ↓
+environment gate
+```
+
+ローカルでは最小の意味ある検証から始め、merge前の全体保証はCIへ置くのが基本です。ただし認証、DB migration、共通packageなど影響範囲が広い変更は早い段階で広いtestを実行します。
+
+## testが通っても確認すること
+
+test greenは重要ですが、次を自動的に証明するものではありません。
+
+- testに書かれていないbusiness ruleを満たす
+- 間違ったmock契約が実APIと一致する
+- 認可のdeny caseが網羅されている
+- migrationがproduction data量で安全である
+- UIが実ブラウザで利用可能である
+- 仕様書と実装が一致している
+
+レビューでは「testがあるか」だけでなく、「意味のある失敗条件を検証しているか」を確認します。
+
+## UIレビューの具体例
+
+顧客一覧画面を変更した場合:
+
+1. desktopとmobileで対象routeを開く。
+2. loading、empty、error、dataありの4状態を確認する。
+3. 長い氏名、長いメール、0件、100件など境界値を確認する。
+4. console errorと失敗network requestを確認する。
+5. keyboard操作とfocus順序を確認する。
+6. 必要なら変更前後screenshotとpixel diffを保存する。
+
+「画面が開いた」だけでは、empty/error stateやresponsive崩れを検証したことになりません。
+
+## merge判断の例
+
+| 状態 | 判断 |
+|---|---|
+| Blocker/High findingが未解決 | mergeしない |
+| 必須testが失敗 | mergeしない |
+| 必須test未実行・理由なし | mergeしない |
+| 外部環境都合でE2E不能、代替証拠と残riskあり | ownerが判断 |
+| Low改善だけ残る | follow-up可 |
+| spec driftが未分類 | merge前に分類する |
+
+AIは検証結果と残riskを提示できますが、例外的にgateを外してmergeする最終責任は人間のownerが持ちます。

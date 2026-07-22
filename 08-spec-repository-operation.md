@@ -17,7 +17,7 @@
 原則:
 
 - 各情報の正本は 1 箇所だけ。他の文書は ID で参照する（例: `BR-ORD-001`）。
-- 上位レイヤーと下位レイヤーが矛盾したら、上位が勝つ。
+- 上位レイヤーは意図の基準だが、矛盾時に下位や実装を自動上書きしない。driftとして止め、ownerが更新対象を判断する。
 - 下位文書に上位の内容をコピーしない。参照だけ書く。
 
 ## 変更ワークフロー
@@ -117,3 +117,101 @@ fixer         … 修正を適用（または修正案を提示）
 - 実装リポジトリの入口ガイド（`CLAUDE.md` など）に、設計書リポジトリへの相対パスを明記する（例: `../product-specs/deliverables/specs/`）。
 - AIDLC フェーズ 5 の delta 反映は「実装リポジトリの AI が設計書リポジトリの文書を直接更新してよいか」を先に決める。
 - 上位レイヤー（要件・業務ルール）は実装側から変更しない。差分として報告し、設計側で判断する。
+
+## SSoTは「一番偉い文書」ではない
+
+SSoTは情報種類ごとの所有元です。1つの文書がすべてに勝つわけではありません。
+
+```text
+キャンセル可能条件     → business rule
+APIのrequest/response  → OpenAPI
+DB変更履歴             → migration
+設計を選んだ理由       → ADR
+現在productionで起きる挙動 → 実環境の観測
+```
+
+例えばbusiness ruleと稼働中codeが違う場合、「上位文書が正しいからcodeを即変更」とは限りません。文書が古い、migrationが未適用、段階release中などの可能性があります。差分を検出し、ownerがどちらを直すか判断します。
+
+## 具体例: キャンセル期限を変更する
+
+変更内容:
+
+```text
+予約開始24時間前までキャンセル可能
+  ↓
+予約開始12時間前までキャンセル可能
+```
+
+更新の流れ:
+
+1. business ruleのBR-IDを更新し、変更理由と適用日を記録する。
+2. domain specの状態遷移・policyが24時間を持っていないか検索する。
+3. API error、画面文言、通知文面への影響を確認する。
+4. acceptance testの境界値を更新する。
+5. 生成物を再生成し、実装repositoryへspec commitを渡す。
+6. 実装側で12時間未満、12時間丁度、12時間超のtestを作る。
+7. release後に旧ruleの予約dataへ影響がないか確認する。
+
+```text
+BR-RES-010
+  ├→ Domain policy
+  ├→ API error
+  ├→ SCR-POS-020の表示文言
+  ├→ Web Bookingの注意書き
+  └→ acceptance test
+```
+
+この参照をIDで追えるようにするのがtraceabilityです。
+
+## indexがあると何が嬉しいか
+
+AIへ毎回repository全体を検索させる代わりに、`_context.yaml`で入口を与えます。
+
+```yaml
+domain: reservation
+aggregates:
+  - Reservation
+usecases:
+  - id: UC-RES-008
+    name: CancelReservation
+business_rules:
+  - BR-RES-010
+api_spec: 05_api_spec.yaml
+screens:
+  - SCR-POS-020
+dependencies:
+  - customer
+  - staff
+```
+
+AIは最初にこのindexを読み、必要な正本だけへ進めます。ただしindexは正本の要約・案内であり、詳細仕様そのものではありません。
+
+## 設計書reviewの具体的な出力
+
+```markdown
+### P1: BR-RES-010の12時間境界がAPI specへ反映されていない
+
+事実:
+- business ruleは12時間へ変更済み
+- API specのerror exampleは24時間のまま
+- Web Booking画面文言も24時間のまま
+
+影響:
+clientとbackendが異なる期限を表示・判定する可能性がある。
+
+修正順序:
+1. API specのerror exampleを更新
+2. 画面仕様の文言を更新
+3. generated clientを再生成
+4. 境界testを更新
+```
+
+「不整合あり」だけでなく、ID、両方の根拠、影響、修正順序を出します。
+
+## 鮮度とversionを管理する
+
+- 設計書repositoryのcommitを実装PRへ記録する。
+- snapshotを使う場合はsource commitと取得日時を持つ。
+- link check、ID重複、未参照IDをCIで検出する。
+- deprecatedなspecを削除せず、後継と適用期間を示す。
+- AI生成文書は人間ownerがacceptedにするまでproposalとして扱う。

@@ -8,17 +8,21 @@ AIDLC は、設計書と規約があるプロジェクトで AI の実装ドリ�
 |---|---|---|---|
 | 1 | コンテキスト読み込み | `phase1-context-summary.md` | 原則なし |
 | 2 | 方針すり合わせ | `phase2-alignment-questions.md`, `phase2-alignment-decisions.md` | 矛盾・未定義がある時だけ |
-| 3 | テスト契約設計 | `phase3-test-contract.md` | 必須 |
-| 4 | テスト先行実装 | `phase4-implementation-plan.md`, 実装、テスト | 実装計画の承認 |
+| 3 | テスト契約設計 | `phase3-test-contract.md` | High riskでは必須。その他はproject policy |
+| 4 | テスト先行実装 | `phase4-implementation-plan.md`, 実装、テスト | High riskや公開契約変更では承認 |
 | 5 | 検証と設計書整合 | delta レポート、設計書更新、PR 準備 | レビュー、承認 |
 
 ## ステップ 0: 初期化
 
 新規タスクでは、できるだけ専用 worktree とタスクフォルダを作ります。
 
+初期化scriptを導入済みのprojectでは、例えば次を実行します。
+
 ```bash
-scripts/aidlc-init.sh <short-task-name> --issue <issue-number>
+.agents/skills/aidlc/scripts/init.sh <short-task-name> --issue <issue-number>
 ```
+
+scriptが存在しないprojectでは、このcommandをそのまま実行せず、同等のfolderとstate fileを手動で作るか、導入時にscriptを実装します。
 
 初期化で作るもの:
 
@@ -28,7 +32,7 @@ scripts/aidlc-init.sh <short-task-name> --issue <issue-number>
 - `aidlc-state.md`
 - `work-log.md`
 
-`audit.md` には、ユーザー依頼の原文、判断、承認を追記します。要約や上書きは禁止です。
+`audit.md`には、依頼の識別情報、重要な判断、承認、変更履歴を追記します。secret、個人情報、顧客data、credentialは保存せず、必要ならredactした要約または安全な監査storeへの参照を残します。確定済み履歴を黙って上書きせず、訂正として追記します。
 
 ## フェーズ 1: コンテキスト読み込み
 
@@ -197,3 +201,93 @@ AIDLC の完了は、次が揃った状態です。
 - 設計書と実装の差分が記録されている
 - 未解決スコープが明示されている
 - PR に進める状態が説明できる
+
+## いつ完全版を使うのか
+
+すべての変更で同じ重さのAIDLCを実行する必要はありません。失敗時の影響と不確実性で深さを変えます。
+
+| リスク | 例 | 推奨フロー |
+|---|---|---|
+| Low | 文言修正、既存pattern内の小変更 | context確認 → 修正 → 対象test |
+| Medium | 通常の画面・API追加 | Phase 1、軽量2、test契約、実装、検証 |
+| High | 認証、決済、DB、公開契約、複数domain | 5 Phase完全版＋人間承認 |
+
+AIDLCは文書を増やすことが目的ではありません。「間違えた時のコストが高い判断を、実装前に外部化する」ために使います。
+
+## 具体例: 予約キャンセルAPI
+
+### Phase 1で集める事実
+
+```text
+- BR-RES-021: 来店前だけキャンセル可能
+- BR-RES-022: 当日キャンセルは料金が発生
+- UC-RES-008: CancelReservation
+- POST /api/v1/reservations/{id}/cancel
+- 現実装には通知eventが存在する
+```
+
+この段階では「料金計算をどこへ実装すべき」といった推奨を混ぜません。
+
+### Phase 2で見つかった矛盾
+
+```text
+business rule: 当日キャンセルは料金が発生する
+domain spec: cancel feeのValue Objectが定義されていない
+API spec: responseにも料金fieldがない
+```
+
+AIが勝手にfieldを追加せず、次を比較して判断を求めます。
+
+- 今回のscopeでdomain、APIまで更新する
+- キャンセル受付だけ実装し、料金計算は別issueにする
+- 現行business ruleを見直す
+
+### Phase 3で完了条件に変換する
+
+| Case | Given | When | Then |
+|---|---|---|---|
+| 正常 | 来店前・権限あり | cancel | cancelled、event発行 |
+| 状態違反 | 来店済み | cancel | 409、状態不変 |
+| 認可違反 | 権限なし | cancel | 403、repository saveなし |
+| tenant違反 | 別company | cancel | resourceを露出せず拒否 |
+| retry | 同じrequestを再送 | cancel | 重複eventを発行しない |
+
+### Phase 4で実装単位へ分ける
+
+```text
+U1 domain: Reservation.cancel()
+U2 application: CancelReservationUseCase
+U3 infrastructure: persistenceとevent連携
+U4 presentation: request/response/error mapping
+U5 tests: domain、UseCase、integration
+```
+
+### Phase 5で確認する
+
+- business ruleとtest caseが対応しているか
+- API specとController/DTOが一致するか
+- eventが重複しないか
+- 設計書にないclassやfieldを追加していないか
+- test、architecture test、buildの結果が記録されているか
+
+## Phaseを戻る条件
+
+AIDLCは必ず一方向に進むwaterfallではありません。
+
+| 発見 | 戻り先 |
+|---|---|
+| 新しい仕様矛盾 | Phase 2 |
+| test契約が実装不能 | Phase 2または3 |
+| 実装中に公開契約変更が必要 | Phase 2 |
+| test不足だけ見つかった | Phase 3または4 |
+| 文書の記載漏れだけ見つかった | Phase 5で更新 |
+
+戻る時は、古い判断を黙って上書きせず、stateとdecisionを更新します。
+
+## 成果物を作りすぎないための基準
+
+- 質問がなければ空の質問fileを作らない。
+- 小さなtaskではcontext、test契約、deltaを1つの作業noteへまとめてよい。
+- chat原文やsecretを監査fileへ無条件に保存しない。
+- 同じ事実を複数phase fileへコピーせず、IDとlinkで参照する。
+- 完了後に誰も読まない中間成果物は、次回の判断・監査に必要か再評価する。
