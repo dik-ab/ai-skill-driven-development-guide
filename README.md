@@ -28,9 +28,9 @@
 11. `11-operations-and-non-dev-skills.md`
     クラウド認証・接続を自動化する運用系 skill と、PM・報告・文書などの開発以外の AI 活用。
 12. `12-live-demo-walkthrough.md`
-    勉強会用ライブデモの解説。このリポジトリのルートに置いた実際に動く最小構成
-    （`CLAUDE.md` + `.claude/rules/` + `.claude/skills/`）を使い、読み込みの 3 層構造と
-    「このPRをレビューして」の一部始終をトレースする。
+    勉強会60分ガイド。ルートの動く最小構成（`CLAUDE.md` + rules + skills 5枚）を使い、
+    基礎（読み込み3層・レビューのトレース）→ AWS連携 → Claude in Slack → draw.io →
+    ブラウザ試験自動化を「同じ型のskill追加」として一本のストーリーで説明する台本。
 
 補助テンプレートは `templates/` に置いています。
 
