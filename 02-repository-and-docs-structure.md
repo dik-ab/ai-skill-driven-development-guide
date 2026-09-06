@@ -4,15 +4,7 @@
 
 ```text
 project-root/
-  AGENTS.md
   CLAUDE.md
-  .agents/
-    skills/
-      aidlc/
-      frontend-review/
-      backend-review/
-      testing/
-      creating-pr/
   .claude/
     rules/
       frontend.md
@@ -20,6 +12,12 @@ project-root/
       api.md
       database.md
       infra.md
+    skills/
+      aidlc/
+      frontend-review/
+      backend-review/
+      testing/
+      creating-pr/
   apps/
     frontend/
     backend/
@@ -63,7 +61,7 @@ workspace/
 
 ## 入口ガイド
 
-`AGENTS.md` は Codex などの AI エージェント向け入口です。ここには詳細を書きすぎず、判断順序と参照先を書きます。
+`CLAUDE.md` は AI エージェント向けの入口です。Claude Code がセッション開始時に自動で読みます。ここには詳細を書きすぎず、判断順序と参照先を書きます。
 
 含めるべき内容:
 
@@ -77,7 +75,6 @@ workspace/
 - CI/CD の正本
 - 検証方針
 
-`CLAUDE.md` や他 AI ツール用の入口も、同じ判断順序に揃えます。ツールごとに情報が分岐すると、AI ごとに違う結論を出す原因になります。
 
 ## rules の置き方
 
@@ -100,10 +97,10 @@ rules には frontmatter で対象パスの glob を付け、該当パスに触�
 
 ## skills の置き方
 
-`.agents/skills/` には、AI が特定作業を行うための手順書を置きます。
+`.claude/skills/` には、AI が特定作業を行うための手順書を置きます。
 
 ```text
-.agents/skills/
+.claude/skills/
   aidlc/
     SKILL.md
     templates/
@@ -301,7 +298,7 @@ AI には「この辺を見て」ではなく、具体的なファイルパス�
 - `deliverables/specs/backend/order/_context.yaml`
 - `deliverables/specs/backend/order/01_domain_model_spec.md`
 - `deliverables/specs/backend/order/05_api_spec.yaml`
-- `.agents/skills/backend-testing/SKILL.md`
+- `.claude/skills/backend-testing/SKILL.md`
 - `.claude/rules/backend.md`
 ```
 
@@ -313,7 +310,7 @@ AI には「この辺を見て」ではなく、具体的なファイルパス�
 
 ## なぜファイルを分けるのか
 
-すべてを`AGENTS.md`や1つの巨大設計書に入れると、次の問題が起きます。
+すべてを`CLAUDE.md`や1つの巨大設計書に入れると、次の問題が起きます。
 
 - frontend作業でもbackend規約が入り、重要な指示が埋もれる
 - APIだけ変更したいのに全domainの仕様を読む
@@ -324,7 +321,7 @@ AI には「この辺を見て」ではなく、具体的なファイルパス�
 
 | 情報 | 分割単位 | 例 |
 |---|---|---|
-| 入口 | repository / package | root `AGENTS.md`、package別`AGENTS.md` |
+| 入口 | repository / package | root `CLAUDE.md`、package別`CLAUDE.md` |
 | rule | 技術領域・対象path | frontend、backend、Terraform |
 | skill | 作業種類 | 実装、test、review、障害調査 |
 | spec | domain・契約 | reservation、customer、accounting |
@@ -335,11 +332,10 @@ AI には「この辺を見て」ではなく、具体的なファイルパス�
 
 ```text
 project-root/
-  AGENTS.md
   CLAUDE.md
   .claude/rules/pos-app.md
-  .agents/skills/spa-frontend/SKILL.md
-  .agents/skills/spa-frontend/references/component-patterns.md
+  .claude/skills/spa-frontend/SKILL.md
+  .claude/skills/spa-frontend/references/component-patterns.md
   deliverables/specs/frontend-design/pos/SCR-POS-101.html
   deliverables/specs/backend/reservation/05_api_spec.yaml
   apps/frontend/pos/src/pages/
@@ -347,7 +343,7 @@ project-root/
 
 各ファイルの役割:
 
-1. `AGENTS.md` / `CLAUDE.md`: POSの配置と作業順序を知る。
+1. `CLAUDE.md`: POSの配置と作業順序を知る。
 2. `pos-app.md`: POS配下で守る固定ルールを知る。
 3. `spa-frontend/SKILL.md`: 画面を作る手順を知る。
 4. `component-patterns.md`: Page、Feature、UIの具体的な書き方を知る。

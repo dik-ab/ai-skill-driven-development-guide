@@ -26,10 +26,9 @@ AI 駆動開発は、AI にコードを書かせることだけではありま�
 
 | 成果物 | 役割 |
 |---|---|
-| `AGENTS.md` | AI エージェント向けの入口。作業順序、禁止事項、検証コマンドを書く |
-| `CLAUDE.md` など | 別 AI ツール向けの同等入口。内容は `AGENTS.md` と揃える |
+| `CLAUDE.md` | AI エージェント向けの入口。作業順序、禁止事項、検証コマンドを書く |
 | `.claude/rules/` | 技術領域別の固定ルール。frontend、backend、infra、API など |
-| `.agents/skills/` | Codex 向けの作業スキル。AIDLC、レビュー、テスト、PR 作成など |
+| `.claude/skills/` | 作業単位の手順書（skill）。AIDLC、レビュー、テスト、PR 作成など |
 | `deliverables/specs/` | 設計書、API 仕様、ドメイン仕様、アーキテクチャ正本 |
 | `requirements/` | 要件定義、画面一覧、業務フローなど上流情報 |
 | `businessRules/` | 業務ルール、受入条件、判断表 |
@@ -117,7 +116,6 @@ unit / integration / architecture testを実行
 | 判断理由が消える | ADR、decision log | 再議論と誤った巻き戻しの減少 |
 | 完了判定が主観的 | test契約、quality gate | 未検証完了の減少 |
 | 危険操作を注意書きだけで防ぐ | hook、permission、CI | 機械的な事故防止 |
-| AIごとに違う手順を使う | 共通masterとadapter | ツール間driftの減少 |
 
 これらは導入しただけで自動的に改善するものではありません。trigger精度、検証結果、手戻り、障害流出などを計測し、skillと文書を更新する必要があります。
 

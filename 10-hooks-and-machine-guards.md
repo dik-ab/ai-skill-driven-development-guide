@@ -186,7 +186,7 @@ AIへ返すerrorには、禁止理由だけでなく正しい代替手順も含�
 
 ```text
 generated編集禁止
-  ├─ AGENTS.mdで理由を説明
+  ├─ CLAUDE.mdで理由を説明
   ├─ hookで即時拒否
   └─ CIでgenerated差分と再生成結果を比較
 ```

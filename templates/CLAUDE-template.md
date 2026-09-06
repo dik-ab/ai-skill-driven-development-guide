@@ -25,7 +25,7 @@ AI は作業前に、依頼を次のどれに該当するか分類します。
 ## 作業順序
 
 1. 変更対象を分類する。
-2. 対象に合う `.claude/rules/*.md` と `.agents/skills/*/SKILL.md` を読む。
+2. 対象に合う `.claude/rules/*.md` と `.claude/skills/*/SKILL.md` を読む。
 3. 設計判断の前に正本ドキュメントを読む。
 4. 既存実装を確認する。
 5. 変更範囲を最小化する。
@@ -34,9 +34,8 @@ AI は作業前に、依頼を次のどれに該当するか分類します。
 
 ## 参照先
 
-- 共通ガイド: `CLAUDE.md`
 - ルール: `.claude/rules/`
-- skills: `.agents/skills/`
+- skills: `.claude/skills/`
 - 正本ドキュメント: `deliverables/specs/`
 - 過去の教訓: `tasks/lessons.md`
 

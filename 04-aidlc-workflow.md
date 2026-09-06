@@ -19,7 +19,7 @@ AIDLC は、設計書と規約があるプロジェクトで AI の実装ドリ�
 初期化scriptを導入済みのprojectでは、例えば次を実行します。
 
 ```bash
-.agents/skills/aidlc/scripts/init.sh <short-task-name> --issue <issue-number>
+.claude/skills/aidlc/scripts/init.sh <short-task-name> --issue <issue-number>
 ```
 
 scriptが存在しないprojectでは、このcommandをそのまま実行せず、同等のfolderとstate fileを手動で作るか、導入時にscriptを実装します。

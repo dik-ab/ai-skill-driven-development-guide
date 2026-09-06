@@ -30,7 +30,7 @@ skillの価値は「AIを賢くすること」よりも、「担当者やセッ�
 
 | 仕組み | 答える質問 | 例 |
 |---|---|---|
-| 入口ガイド | 最初に何を確認するか | `AGENTS.md`, `CLAUDE.md` |
+| 入口ガイド | 最初に何を確認するか | `CLAUDE.md` |
 | rule | 常に何を守るか | 「生成API clientを手編集しない」 |
 | skill | この作業をどう進めるか | 「認可機能を実装する手順」 |
 | spec | 何を実現すべきか | API request/response、業務ルール |
@@ -44,7 +44,7 @@ skillの価値は「AIを賢くすること」よりも、「担当者やセッ�
 例えば「予約キャンセルに認可を追加する」という依頼では、次のように複数の情報が合流します。
 
 ```text
-AGENTS.md
+CLAUDE.md
   └─ backend作業だと分類する
 
 .claude/rules/backend.md
@@ -123,13 +123,11 @@ reservationのbusiness rule / API spec
 
 ## skillの基本構成
 
-Codex向けの代表的な構成です。
+代表的な構成です。
 
 ```text
-.agents/skills/backend-auth/
+.claude/skills/backend-auth/
   SKILL.md                   # 必須。起動条件と中心手順
-  agents/
-    openai.yaml              # 任意。UI表示用metadata
   references/
     authentication.md        # 必要時に読む詳細知識
     authorization-model.md
@@ -148,7 +146,6 @@ Codex向けの代表的な構成です。
 | パス | AIにとっての役割 | 具体例 |
 |---|---|---|
 | `SKILL.md` | 中心となる作業手順 | 読む順番、作業ステップ、停止条件 |
-| `agents/openai.yaml` | Codex UI上の表示情報 | 表示名、短い説明、初期prompt |
 | `references/` | 必要時に読む詳細資料 | schema、判定表、API、コード例 |
 | `scripts/` | 読解より実行が適した処理 | lint、生成、集計、差分検査 |
 | `assets/` | 出力に利用する素材 | ロゴ、HTML雛形、boilerplate |
@@ -495,30 +492,6 @@ skillは作業手順、subagentは作業を担当する別の実行主体です�
 
 詳細は`09-subagents-and-orchestration.md`を参照してください。
 
-## 複数AIツールで共有する方法
-
-参考プロジェクトでは、詳細手順を`.agents/skills/`のmasterへ置き、Claude Codeが発見する`.claude/skills/`には薄い入口を置いています。
-
-```text
-.claude/skills/backend-auth/SKILL.md
-  - name / description
-  - Claude Codeが発見する入口
-  - .agents側masterを読む指示
-          ↓
-.agents/skills/backend-auth/SKILL.md
-  - 共有する詳細手順
-  - references / scripts / evals
-```
-
-選択肢は3つあります。
-
-| 方法 | 長所 | 注意点 |
-|---|---|---|
-| 薄いadapter | ツール固有metadataを持てる | adapter追加漏れを検知する必要がある |
-| symlink | 重複が少ない | OS、Git、ツールの対応差を確認する |
-| 同期script | 変換も自動化できる | scriptとCIの保守が必要 |
-
-本文を手動コピーする方式は避けます。片方だけ修正され、AIツールによって違う手順を使う原因になるためです。
 
 ## よくある失敗
 
@@ -602,10 +575,8 @@ skillに`./scripts/check.sh`と書いたのにscriptがない、または実行�
 - [ ] scriptを実行して成功を確認した
 - [ ] templateに品質条件がある
 - [ ] 指示でなく機械的に強制すべきものをhook/CIへ分けた
-- [ ] 複数ツール間の正本とadapter方針が決まっている
 - [ ] 実タスクでforward testした
 
 ## 公式仕様
 
-- [Codex: Agent Skills](https://developers.openai.com/codex/skills/)
 - [Claude Code: Extend Claude with skills](https://code.claude.com/docs/en/skills)

@@ -10,9 +10,13 @@
 
 ```text
 project-root/
-  AGENTS.md
   CLAUDE.md
-  .agents/
+  .claude/
+    rules/
+      monorepo.md
+      frontend.md
+      backend.md
+      infra.md
     skills/
       aidlc/
         SKILL.md
@@ -22,12 +26,6 @@ project-root/
         SKILL.md
       code-review/
         SKILL.md
-  .claude/
-    rules/
-      monorepo.md
-      frontend.md
-      backend.md
-      infra.md
   deliverables/
     requirements/
     businessRules/
@@ -41,9 +39,9 @@ project-root/
     lessons.md
 ```
 
-## フェーズ 1: AGENTS.md を作る
+## フェーズ 1: CLAUDE.md を作る
 
-`AGENTS.md` に書くこと:
+`CLAUDE.md` に書くこと:
 
 ```markdown
 # エージェントガイド
@@ -90,7 +88,7 @@ project-root/
 
 ## フェーズ 3: AIDLC skill を導入する
 
-`.agents/skills/aidlc/SKILL.md` を作り、5 フェーズを定義します。
+`.claude/skills/aidlc/SKILL.md` を作り、5 フェーズを定義します。
 
 最小版:
 
@@ -195,10 +193,9 @@ AI には、作業開始時に lessons を読むよう入口ガイドで指示�
 
 ## 導入チェックリスト
 
-- [ ] `AGENTS.md` がある
-- [ ] AI ツールごとの入口ガイドが同じ判断順序になっている
+- [ ] `CLAUDE.md` がある
 - [ ] `.claude/rules/` に領域別ルールがある
-- [ ] `.agents/skills/aidlc/` がある
+- [ ] `.claude/skills/aidlc/` がある
 - [ ] `templates/question.md` がある
 - [ ] `templates/test-contract.md` がある
 - [ ] 設計書の正本パスが決まっている
@@ -217,7 +214,6 @@ AI には、作業開始時に lessons を読むよう入口ガイドで指示�
 - [ ] lint hook など、編集への機械的ガードがある
 - [ ] SSoT のレイヤーと変更順序が決まっている
 - [ ] 主要 skill に trigger evals がある
-- [ ] 複数 AI ツールを使う場合、skill ミラーの正本と同期方法が決まっている
 - [ ] 運用系 skillが、組織の認証・承認policyに従い、不要な手戻りなく完走できる
 
 ## 最初の 30 日の進め方
@@ -244,7 +240,7 @@ AI には、作業開始時に lessons を読むよう入口ガイドで指示�
 
 | 段階 | 導入するもの | 目的 |
 |---|---|---|
-| Level 1: 入口 | `AGENTS.md`、正本path、基本command | AIがrepositoryを迷わない |
+| Level 1: 入口 | `CLAUDE.md`、正本path、基本command | AIがrepositoryを迷わない |
 | Level 2: 再現 | 頻出skill、test、review、lessons | 同じ作業を同じ方法で行う |
 | Level 3: 強制 | hooks、CI、evals、監査、権限 | 注意力に依存しない |
 
@@ -263,7 +259,7 @@ openapi.yaml   API契約
 ### 1日目: 入口を作る
 
 ```markdown
-# AGENTS.md
+# CLAUDE.md
 
 ## Repository map
 - Web: `apps/web`
@@ -287,7 +283,7 @@ openapi.yaml   API契約
 例えば画面追加が頻出なら`web-screen` skillを作ります。
 
 ```text
-.agents/skills/web-screen/
+.claude/skills/web-screen/
   SKILL.md
   references/component-patterns.md
 ```
@@ -305,7 +301,7 @@ openapi.yaml   API契約
 ```text
 失敗: generated clientを直接編集した
   ↓
-AGENTS.mdの注意だけでは再発
+CLAUDE.mdの注意だけでは再発
   ↓
 PreToolUse hookまたはCIでgenerated pathの編集を検知
 ```
@@ -330,7 +326,7 @@ PreToolUse hookまたはCIでgenerated pathの編集を検知
 
 | 成果物 | owner例 | 更新契機 |
 |---|---|---|
-| `AGENTS.md` | repository maintainer | 構成・command変更 |
+| `CLAUDE.md` | repository maintainer | 構成・command変更 |
 | 技術rule | area owner | standard・version変更 |
 | domain spec | domain owner | business/API変更 |
 | skill | workflow owner | 実作業で失敗・手戻り |

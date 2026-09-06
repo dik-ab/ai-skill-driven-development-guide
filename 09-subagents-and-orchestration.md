@@ -139,7 +139,7 @@ agent定義へdomain知識を大量に複製せず、skillとspecを読むよう
 目的: customer domainのAPI契約driftをreviewする。
 
 必須資料:
-- .agents/skills/backend-contract-pr-review/SKILL.md
+- .claude/skills/backend-contract-pr-review/SKILL.md
 - deliverables/specs/backend/customer/05_api_spec.yaml
 - .claude/rules/backend.md
 

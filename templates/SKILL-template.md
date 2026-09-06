@@ -32,7 +32,7 @@ description: >
 AI は作業開始前に、ここに書いたファイルを読みます。
 
 - `.claude/rules/...`
-- `.agents/skills/.../references/...`
+- `.claude/skills/.../references/...`
 - `deliverables/specs/...`
 - `tasks/lessons.md`
 

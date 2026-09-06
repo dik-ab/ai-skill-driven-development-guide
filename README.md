@@ -3,7 +3,13 @@
 このフォルダは、AI エージェントと人間が共同で開発するための汎用ガイドです。
 特定の業種・案件・組織に依存しない形で、設計書、議事録、構成図、skills、レビュー、PR、導入手順をまとめます。
 
-## 読む順番
+## まず入門編から
+
+初めて読む人、社内発表で使う人は `intro/` の入門編から始めてください。
+用語集、3 層の仕組み、仕様書駆動、自動レビュー、AIDLC の 5 フェーズを、架空の会議室予約アプリの例で 45 分で読めるようにまとめています。
+以下の 01〜12 章は詳細なリファレンスです。
+
+## 読む順番（リファレンス）
 
 1. `01-overview.md`
    AI 駆動開発の全体像、基本原則、置くべき情報の種類。
@@ -34,7 +40,7 @@
 
 補助テンプレートは `templates/` に置いています。
 
-- `templates/AGENTS-template.md`
+- `templates/CLAUDE-template.md`
 - `templates/SKILL-template.md`
 - `templates/aidlc-question-template.md`
 - `templates/meeting-minutes-template.md`
