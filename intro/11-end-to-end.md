@@ -19,7 +19,7 @@ CLAUDE.md
 .claude/rules/        frontend.md  backend.md
 .claude/skills/       feature-dev  pr-review  browser-test  (aws-readonly  drawio-diagram)
 .claude/hooks/        block-generated-edit.sh  block-dangerous-commands.sh
-../specs/             仕様書（正本）
+../sample-specs/      仕様書（正本。このデモでは架空）
 ```
 
 ## 全体フロー
