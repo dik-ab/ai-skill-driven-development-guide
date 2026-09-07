@@ -27,8 +27,8 @@ AI が作業を始めるとき、必ず最初に読むファイルです。書�
 # 会議室予約アプリ エージェントガイド
 
 ## リポジトリの地図
-- Web 画面: `apps/web`
-- API サーバー: `apps/api`
+- Web 画面: `apps/frontend`
+- API サーバー: `apps/backend`
 - API 契約: `openapi.yaml`
 - 仕様書（正本）: `../meeting-room-specs/`
 
@@ -45,8 +45,8 @@ AI が作業を始めるとき、必ず最初に読むファイルです。書�
 - レビュー結果を「問題なさそう」で終えない。
 
 ## 代表コマンド
-- Web テスト: `pnpm --filter web test`
-- API テスト: `./gradlew :apps:api:test`
+- Web テスト: `pnpm --filter frontend test`
+- API テスト: `./gradlew :apps:backend:test`
 ```
 
 入口が答えるのは「どの領域か」「最初にどこを見るか」「何を禁止するか」「代表コマンドは何か」です。
@@ -59,7 +59,7 @@ AI が作業を始めるとき、必ず最初に読むファイルです。書�
 ```markdown
 ---
 paths:
-  - apps/api/**
+  - apps/backend/**
 ---
 # API サーバーのルール
 
@@ -68,7 +68,7 @@ paths:
 - 例外はそのまま投げず、共通のエラー形式に変換する。
 ```
 
-先頭の `paths` が「このルールは `apps/api` 配下を触るときだけ有効」という条件です。
+先頭の `paths` が「このルールは `apps/backend` 配下を触るときだけ有効」という条件です。
 Web 画面の作業中に API のルールが混ざることを防ぎます。
 
 ## 層 3: スキル `.claude/skills/`

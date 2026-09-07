@@ -11,8 +11,8 @@
 架空の会議室予約アプリです。
 
 ```text
-apps/web        Web 画面（React）
-apps/api        API サーバー（Spring Boot）
+apps/frontend        Web 画面（React）
+apps/backend        API サーバー（Spring Boot）
 openapi.yaml    API 契約
 ../specs/       仕様書（正本）
   business-rules.md
@@ -35,7 +35,7 @@ AI が正本を読んで集めた事実です。
 - specs/business-rules.md
 - openapi.yaml
 - specs/screens/SCR-010_reservation-detail.md
-- apps/api/src/.../Reservation.java（既存コード）
+- apps/backend/src/.../Reservation.java（既存コード）
 
 関係する業務ルール
 - BR-01: 予約は開始前だけキャンセルできる
@@ -133,9 +133,9 @@ U1 から順に、テストを書いてから実装し、対象テストを実�
 実行した検証:
 
 ```text
-./gradlew :apps:api:test        成功
-pnpm --filter web test           成功
-pnpm --filter web typecheck      成功
+./gradlew :apps:backend:test        成功
+pnpm --filter frontend test           成功
+pnpm --filter frontend typecheck      成功
 pnpm build                       成功
 画面確認                         SCR-010 でボタン表示、確認ダイアログ、キャンセル後の表示を確認
 ```
