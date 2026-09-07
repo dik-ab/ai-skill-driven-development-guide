@@ -24,4 +24,5 @@
 
 - 領域別ルール: `.claude/rules/`（frontend.md / backend.md）
 - タスク種別の手順書: `.claude/skills/`（feature-dev / pr-review）
+- 機械的ガード: `.claude/hooks/`（生成物の手編集と危険コマンドを拒否。設定は `.claude/settings.json`）
 - 設計書の正本: `../sample-specs/`（このデモでは架空。実プロジェクトでは設計書リポジトリを指す）
